@@ -173,6 +173,7 @@ main {
         width: 20px;
         height: 20px;
     }
+    
     main {
         display: flex;
         max-width: 1160px;
