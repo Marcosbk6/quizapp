@@ -45,7 +45,7 @@ async function buscarPerguntas() {
 
 
 
-function montarPerguntar() {
+function montarPergunta() {
     const main = document.querySelector("main")
 
     main.innerHTML = ` 
@@ -99,7 +99,7 @@ function montarPerguntar() {
                 </label>
             </form>
 
-            <button>Enviar</button>
+            <button>Responder</button>
         </section>
     
     `
@@ -118,6 +118,17 @@ function guardarResposta(evento) {
 }
 
 function validarResposta() {
+    const botaoEnviar = document.querySelector(".alternativas button")
+    botaoEnviar.innerText = "Próxima"
+    botaoEnviar.removeEventListener("click", validarResposta)
+
+    if(pergunta === 10) {
+        botaoEnviar.innerText = "Finalizar"
+        botaoEnviar.addEventListener("click", finalizar)
+    } else {
+        botaoEnviar.addEventListener("click", proximaPergunta)
+    }
+
     if (resposta === quiz.questions[pergunta-1].answer) {
         document.querySelector(`label[for='${idInputResposta}']`).setAttribute("id", "correta")
         pontos = pontos + 1
@@ -125,13 +136,23 @@ function validarResposta() {
         document.querySelector(`label[for='${idInputResposta}']`).setAttribute("id", "errada")
         document.querySelector(`label[for='${respostaCorretaId}']`).setAttribute("id", "correta")
     }
+
+    pergunta = pergunta + 1
+    console.log(pergunta)
 }
 
-async function iniciar() {
-    alterarAssunto()
-    await buscarPerguntas()
-    montarPerguntar()
+function finalizar() {
+    localStorage.setItem("pontos", pontos) 
 
+    window.location.href = "../resultado/resultado.html"
+}
+
+function proximaPergunta() {
+    montarPergunta()
+    adicionarEventoInputs()
+}
+
+function adicionarEventoInputs() {
     const inputsRespostas = document.querySelectorAll(".alternativas input")
     inputsRespostas.forEach(input => {
         input.addEventListener("click", guardarResposta)
@@ -140,6 +161,13 @@ async function iniciar() {
             respostaCorretaId = input.id
         }
     })
+}
+
+async function iniciar() {
+    alterarAssunto()
+    await buscarPerguntas()
+    montarPergunta()
+    adicionarEventoInputs()
 }
 
 iniciar()
